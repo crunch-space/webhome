@@ -13,15 +13,12 @@ on:
       DOCKERHUB_USERNAME:
         default: ohdat123
         type: string
+      DOCKERHUB_REPO:
+        type: string
+        default: ohdat
       VERSION:
         type: string
         default: v0.1.${{ github.run_number }}
-      NODE_VERSION:
-        default: "18"
-        type: string
-      BUILD_COMMANDS:
-        default: "npm install && npm run build"
-        type: string
     secrets:
       DOCKERHUB_TOKEN:
         required: true
@@ -39,7 +36,7 @@ jobs:
     permissions:
       contents: write
     env:
-      TAG: ${{ inputs.DOCKERHUB_REPO }}/${{ github.event.repository.name }}:v0.1.${{ github.run_number }}
+      TAG: ${{ inputs.DOCKERHUB_REPO }}/${{ github.event.repository.name }}:${{ inputs.VERSION }}
       LATEST_TAG: ${{ inputs.DOCKERHUB_REPO }}/${{ github.event.repository.name }}:latest
     outputs:
       image: ${{ env.TAG }}
