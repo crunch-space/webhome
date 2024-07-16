@@ -1,4 +1,4 @@
-name: test-build
+name: test-build && deploy
 on:
   workflow_dispatch:
     inputs:
@@ -40,7 +40,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 20
-      - run: echo ${{env.TAG}}
+      # - run: echo ${{env.TAG}}
       - run: npm install
       - run: npm run build
       # - name: yarn install && build
@@ -66,3 +66,22 @@ jobs:
           push: true
           platforms: linux/amd64,linux/arm64
           tags: ${{ env.TAG }},${{ env.LATEST_TAG }}
+  deploy:
+    needs: build
+    uses: ohdat/actions/.github/workflows/helm-cd.yml@master
+    strategy:
+      matrix:
+        include:
+          - helm: ${{ github.event.repository.name }} ohdat/website
+            set: "image.repository=${{ needs.build.outputs.image}},resources=null,gateway.hosts[0]=${{ github.event.repository.name }}.dev.catgpt.chat"
+
+    with:
+      environment: develop
+      kubename: ohdat-dev
+      namespace: dev-website
+      helm: ${{ matrix.helm }}
+      set: ${{ matrix.set }}
+      helm-repo: https://ohdat.github.io/helm-template/
+    secrets:
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_AK }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SK }}
