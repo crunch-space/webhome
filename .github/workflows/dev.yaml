@@ -31,7 +31,7 @@ jobs:
     permissions:
       contents: write
     env:
-      TAG: ${{ inputs.DOCKERHUB_REPO }}/${{ github.event.repository.name }}:${{ inputs.VERSION }}
+      TAG: ${{ inputs.DOCKERHUB_REPO }}/${{ github.event.repository.name }}:${{ inputs.VERSION || format('v0.1.{0}', github.run_number) }}
       LATEST_TAG: ${{ inputs.DOCKERHUB_REPO }}/${{ github.event.repository.name }}:latest
     outputs:
       image: ${{ env.TAG }}
