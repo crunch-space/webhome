@@ -8,8 +8,33 @@ on:
       DOCKERHUB_REPO:
         type: string
         default: ohdat
+  workflow_call:
+    inputs:
+      DOCKERHUB_USERNAME:
+        default: ohdat123
+        type: string
+      VERSION:
+        type: string
+        default: v0.1.${{ github.run_number }}
+      NODE_VERSION:
+        default: "18"
+        type: string
+      BUILD_COMMANDS:
+        default: "npm install && npm run build"
+        type: string
+    secrets:
+      DOCKERHUB_TOKEN:
+        required: true
+      GIT_TOKEN:
+        required: false
+    outputs:
+      image:
+        description: "The image of docker build tag"
+        value: ${{ jobs.build.outputs.image }}
+      version:
+        value: ${{ inputs.VERSION }}
 jobs:
-  buildAndPush:
+  build:
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -23,10 +48,12 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 20
-      - name: yarn install && build
-        run: |
-          yarn 
-          yarn build
+      - run: npm install
+      - run: npm run build
+      # - name: yarn install && build
+      #   run: |
+      #     yarn
+      #     yarn build
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
       - name: Set up Docker Buildx
