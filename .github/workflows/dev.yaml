@@ -1,4 +1,4 @@
-name: dev
+name: test-build
 on:
   workflow_dispatch:
     inputs:
@@ -8,10 +8,6 @@ on:
       DOCKERHUB_REPO:
         type: string
         default: ohdat
-  push:
-    branches:
-      - "develop"
-
 jobs:
   buildAndPush:
     runs-on: ubuntu-latest
@@ -26,11 +22,11 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
-          node-version: 18
-      - name: npm install, build, and test
+          node-version: 20
+      - name: yarn install && build
         run: |
-          npm install
-          npm run build
+          yarn 
+          yarn build
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
       - name: Set up Docker Buildx
