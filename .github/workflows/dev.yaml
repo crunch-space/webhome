@@ -19,11 +19,6 @@ on:
       VERSION:
         type: string
         default: v0.1.${{ github.run_number }}
-    secrets:
-      DOCKERHUB_TOKEN:
-        required: true
-      GIT_TOKEN:
-        required: false
     outputs:
       image:
         description: "The image of docker build tag"
@@ -45,6 +40,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 20
+      - run: echo ${{env.TAG}}
       - run: npm install
       - run: npm run build
       # - name: yarn install && build
